@@ -1,6 +1,7 @@
 import Vapor
 import FluentProvider
 import HTTP
+import AuthProvider
 
 final class User: Model {
     let storage = Storage()
@@ -68,6 +69,13 @@ extension User: JSONConvertible {
         try json.set(User.emailKey, email)
         return json
     }
+    
+    func makeJSON(token: AccessToken) throws -> JSON {
+        var json = JSON()
+        try json.set("user", makeJSON())
+        try json.set("token", token.makeJSON())
+        return json
+    }
 }
 
 extension User: ResponseRepresentable {}
@@ -94,4 +102,8 @@ extension User {
     var notes: Children<User, Note> {
         return children()
     }
+}
+
+extension User: TokenAuthenticatable {
+    public typealias TokenType = AccessToken
 }
