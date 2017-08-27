@@ -8,26 +8,34 @@ final class Note: Model {
     
     var title: String
     var body: String
+    let userId: Identifier
     
     static let idKey = "id"
     static let titleKey = "title"
     static let bodyKey = "body"
     
-    init(title: String, body: String) {
+    init(title: String, body: String, userId: Identifier) {
         self.title = title
         self.body = body
+        self.userId = userId
     }
     
     init(row: Row) throws {
         title = try row.get(Note.titleKey)
         body = try row.get(Note.bodyKey)
+        userId = try row.get(User.foreignIdKey)
     }
     
     func makeRow() throws -> Row {
         var row = Row()
         try row.set(Note.titleKey, title)
         try row.set(Note.bodyKey, body)
+        try row.set(User.foreignIdKey, userId)
         return row
+    }
+    
+    var owner: Parent<Note, User> {
+        return parent(id: userId)
     }
 }
 
@@ -37,6 +45,7 @@ extension Note: Preparation {
             builder.id()
             builder.string(Note.titleKey)
             builder.custom(Note.bodyKey, type: "text")
+            builder.parent(User.self)
         }
     }
     
@@ -49,7 +58,8 @@ extension Note: JSONConvertible {
     convenience init(json: JSON) throws {
         try self.init(
             title: json.get(Note.titleKey),
-            body: json.get(Note.bodyKey)
+            body: json.get(Note.bodyKey),
+            userId: json.get(User.foreignIdKey)
         )
     }
     
@@ -78,4 +88,3 @@ extension Note: Updateable {
         ]
     }
 }
-

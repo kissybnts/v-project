@@ -10,6 +10,7 @@ final class User: Model {
     var email: String
     
     static let idKey = "id"
+    static let foreignIdKey = "user_id"
     static let nameKey = "name"
     static let passwordKey = "password"
     static let emailKey = "email"
@@ -86,5 +87,11 @@ extension User: Updateable {
                 user.email = email
             }
         ]
+    }
+}
+
+extension User {
+    var notes: Children<User, Note> {
+        return children()
     }
 }
