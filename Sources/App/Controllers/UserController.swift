@@ -45,6 +45,17 @@ final class UserController: ResourceRepresentable {
         return user
     }
     
+    func notes(_ req: Request) throws -> ResponseRepresentable {
+        
+        guard let userId = req.parameters["id"]?.int else {
+            throw Abort.badRequest
+        }
+        
+        let notes = try Note.makeQuery().filter(User.foreignIdKey, userId).all()
+        
+        return try notes.makeJSON()
+    }
+    
     func makeResource() -> Resource<User> {
         return Resource(
             index: index,
