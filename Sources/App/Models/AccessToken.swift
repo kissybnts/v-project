@@ -32,8 +32,9 @@ extension AccessToken: Preparation {
         try database.create(self) { builder in
             builder.id()
             builder.string(AccessToken.tokenKey)
-            builder.parent(User.self)
+            builder.parent(User.self, unique: true)
         }
+        try database.index(AccessToken.tokenKey, for: AccessToken.self)
     }
     
     static func revert(_ database: Database) throws {
