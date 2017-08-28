@@ -3,7 +3,11 @@ import HTTP
 
 final class NoteController: ResourceRepresentable {
     func index(_ req: Request) throws -> ResponseRepresentable {
-        return try Note.all().makeJSON()
+        guard let userId = try req.user().id else {
+            throw Abort.unauthorized
+        }
+        let notes = try Note.makeQuery().filter(User.foreignIdKey, userId).sort(Note.idKey, .ascending).all()
+        return try notes.makeJSON()
     }
     
     func create(_ req: Request) throws -> ResponseRepresentable {
