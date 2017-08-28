@@ -2,19 +2,23 @@ import Vapor
 import HTTP
 
 final class UserController {
+    let drop: Droplet
+    
+    init(drop: Droplet) throws {
+        self.drop = drop
+    }
+    
     func index(_ req: Request) throws -> ResponseRepresentable {
         return try req.user()
     }
     
     func create(_ req: Request) throws -> ResponseRepresentable {
         let user = try req.userFromJson()
+        user.password = try drop.cipher.encrypt(user.password).makeString()
         try user.save()
-        let token = AccessToken(token: "ramdomString\(user.email)", userId: user.id!)
+        let token = try getToken(user: user)
         try token.save()
-        var json = JSON()
-        try json.set("user", user.makeJSON())
-        try json.set("token", token.makeJSON())
-        return json
+        return try user.makeJSON(token: token)
     }
     
     func delete(_ req: Request) throws -> ResponseRepresentable {
@@ -64,12 +68,13 @@ final class UserController {
             throw Abort.badRequest
         }
         
-        let query = try User.makeQuery().and { and in
-            try and.filter(User.emailKey, email)
-            try and.filter(User.passwordKey, password)
+        guard let user = try User.makeQuery().filter(User.emailKey, email).first() else {
+            throw Abort.unauthorized
         }
         
-        guard let user = try query.first() else {
+        let isMatched = try drop.cipher.match(row: password, encrypted: user.password)
+        
+        if !isMatched {
             throw Abort.unauthorized
         }
         
@@ -77,11 +82,20 @@ final class UserController {
             try token.delete()
         }
         
-        let token = AccessToken(token: "newRandomString\(user.email)", userId: user.id!)
+        let token = try getToken(user: user)
         
         try token.save()
         
         return try user.makeJSON(token: token)
+    }
+    
+    private func getToken(user: User) throws -> AccessToken {
+        guard let userId = user.id else {
+            throw Abort.badRequest
+        }
+        let hash = try drop.hash.make("sio\(user.email)\(user.updatedAt!.hashValue)").makeString()
+        let token = AccessToken(token: hash, userId: userId)
+        return token
     }
 }
 
@@ -99,4 +113,9 @@ extension Request {
     }
 }
 
-extension UserController: EmptyInitializable {}
+extension CipherProtocol {
+    func match(row: String, encrypted: String) throws-> Bool {
+        let decrypted = try decrypt(encrypted).makeString()
+        return row == decrypted
+    }
+}

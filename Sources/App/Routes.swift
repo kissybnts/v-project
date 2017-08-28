@@ -3,7 +3,7 @@ import AuthProvider
 
 extension Droplet {
     func setupRoutes() throws {
-        let userController = UserController()
+        let userController = try UserController(drop: self)
         
         // able to access without token
         group("v1") { unAuthed in

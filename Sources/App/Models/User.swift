@@ -65,7 +65,6 @@ extension User: JSONConvertible {
         var json = JSON()
         try json.set(User.idKey, id)
         try json.set(User.nameKey, name)
-        try json.set(User.passwordKey, password)
         try json.set(User.emailKey, email)
         return json
     }
@@ -73,7 +72,7 @@ extension User: JSONConvertible {
     func makeJSON(token: AccessToken) throws -> JSON {
         var json = JSON()
         try json.set("user", makeJSON())
-        try json.set("token", token.makeJSON())
+        try json.set("token", token.token)
         return json
     }
 }
