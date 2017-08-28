@@ -3,12 +3,13 @@ import AuthProvider
 
 extension Droplet {
     func setupRoutes() throws {
-        let userController = try UserController(drop: self)
+        let userController = UserController()
+        let authController = AuthController(drop: self)
         
         // able to access without token
         group("v1") { unAuthed in
-            unAuthed.post("signup", handler: userController.create)
-            unAuthed.post("login", handler: userController.login)
+            unAuthed.post("signup", handler: authController.signUp)
+            unAuthed.post("login", handler: authController.login)
         }
 
         let tokenMiddleware = TokenAuthenticationMiddleware(User.self)
