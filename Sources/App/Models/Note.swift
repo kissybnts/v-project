@@ -9,21 +9,25 @@ final class Note: Model {
     var title: String
     var body: String
     let userId: Identifier
+    var isPinned: Bool
     
     static let idKey = "id"
     static let titleKey = "title"
     static let bodyKey = "body"
+    static let isPinnedKey = "is_pinned"
     
-    init(title: String, body: String, userId: Identifier) {
+    init(title: String, body: String, userId: Identifier, isPinned: Bool = false) {
         self.title = title
         self.body = body
         self.userId = userId
+        self.isPinned = isPinned
     }
     
     init(row: Row) throws {
         title = try row.get(Note.titleKey)
         body = try row.get(Note.bodyKey)
         userId = try row.get(User.foreignIdKey)
+        isPinned = try row.get(Note.isPinnedKey)
     }
     
     func makeRow() throws -> Row {
@@ -31,6 +35,7 @@ final class Note: Model {
         try row.set(Note.titleKey, title)
         try row.set(Note.bodyKey, body)
         try row.set(User.foreignIdKey, userId)
+        try row.set(Note.isPinnedKey, isPinned)
         return row
     }
     
@@ -46,6 +51,7 @@ extension Note: Preparation {
             builder.string(Note.titleKey)
             builder.custom(Note.bodyKey, type: "text")
             builder.parent(User.self)
+            builder.bool(Note.isPinnedKey, default: false)
         }
     }
     
@@ -59,7 +65,8 @@ extension Note: JSONConvertible {
         try self.init(
             title: json.get(Note.titleKey),
             body: json.get(Note.bodyKey),
-            userId: json.get(User.foreignIdKey)
+            userId: json.get(User.foreignIdKey),
+            isPinned: json.get(Note.isPinnedKey)
         )
     }
     
@@ -68,6 +75,7 @@ extension Note: JSONConvertible {
         try json.set(Note.idKey, id)
         try json.set(Note.titleKey, title)
         try json.set(Note.bodyKey, body)
+        try json.set(Note.isPinnedKey, isPinned)
         return json
     }
 }
@@ -84,6 +92,9 @@ extension Note: Updateable {
             },
             UpdateableKey(Note.bodyKey, String.self) { note, body in
                 note.body = body
+            },
+            UpdateableKey(Note.isPinnedKey, Bool.self) { note, isPinned in
+                note.isPinned = isPinned
             }
         ]
     }
