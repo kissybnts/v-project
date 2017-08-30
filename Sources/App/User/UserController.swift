@@ -43,9 +43,3 @@ final class UserController {
         return try notes.makeJSON()
     }
 }
-
-extension Request {
-    func user() throws -> User {
-        return try auth.assertAuthenticated()
-    }
-}

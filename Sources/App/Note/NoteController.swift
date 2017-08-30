@@ -104,13 +104,6 @@ final class NoteController: ResourceRepresentable {
 }
 
 extension Request {
-    func userId() throws -> Identifier {
-        let user: User = try self.user()
-        if let userId = user.id {
-            return userId
-        }
-        throw Abort.unauthorized
-    }
     func note() throws -> Note {
         guard let json = json else {
             throw Abort.badRequest
@@ -119,4 +112,4 @@ extension Request {
     }
 }
 
-extension NoteController: EmptyInitializable { }
+extension NoteController: EmptyInitializable {}
