@@ -23,5 +23,6 @@ extension Config {
         preparations.append(User.self)
         preparations.append(AccessToken.self)
         preparations.append(Note.self)
+        preparations.append(Sentence.self)
     }
 }
