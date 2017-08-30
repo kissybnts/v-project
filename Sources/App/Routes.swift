@@ -16,7 +16,6 @@ extension Droplet {
         
         // properly token is required to access
         let authed = grouped(tokenMiddleware).grouped("v1")
-        try authed.resource("notes", NoteController.self)
         authed.group("me") { me in
             me.get("", handler: userController.index)
             me.patch("", handler: userController.update)
@@ -24,5 +23,7 @@ extension Droplet {
             me.delete("", handler: userController.delete)
             me.get("notes", handler: userController.notes)
         }
+        try authed.resource("notes", NoteController.self)
+        try authed.resource("sentences", SentenceController.self)
     }
 }
