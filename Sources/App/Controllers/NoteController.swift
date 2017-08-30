@@ -4,7 +4,16 @@ import HTTP
 final class NoteController: ResourceRepresentable {
     func index(_ req: Request) throws -> ResponseRepresentable {
         let userId = try req.userId()
-        let notes = try Note.makeQuery().filter(User.foreignIdKey, userId).sort(Note.idKey, .ascending).all()
+        
+        let filterParamPair = getFilterParam(req: req, userId: userId)
+        
+        let query = try Note.makeQuery()
+        
+        try filterParamPair.forEach { key, value in
+            try query.filter(key, value)
+        }
+        
+        let notes = try query.sort(Note.idKey, .ascending).all()
         return try notes.makeJSON()
     }
     
@@ -81,11 +90,22 @@ final class NoteController: ResourceRepresentable {
             clear: clear
         )
     }
+    
+    private func getFilterParam(req: Request, userId: Identifier) -> Dictionary<String, NodeRepresentable> {
+        var dic = Dictionary<String, NodeRepresentable>()
+        
+        dic[User.foreignIdKey] = userId
+        if let isPinned = req.query?[Note.isPinnedKey]?.bool {
+            dic[Note.isPinnedKey] = isPinned
+        }
+        
+        return dic
+    }
 }
 
 extension Request {
     func userId() throws -> Identifier {
-        let user: User = try auth.assertAuthenticated()
+        let user: User = try self.user()
         if let userId = user.id {
             return userId
         }
