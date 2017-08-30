@@ -20,11 +20,44 @@ final class SentenceController: ResourceRepresentable {
         return sentence
     }
     
+    func show(_ req: Request, sentence: Sentence) -> ResponseRepresentable {
+        return sentence
+    }
+    
+    func update(_ req: Request, sentence: Sentence) throws -> ResponseRepresentable {
+        let userId = try req.userId()
+        if sentence.userId != userId {
+            throw Abort.unauthorized
+        }
+        try sentence.update(for: req)
+        try sentence.save()
+        
+        return sentence
+    }
+    
+    func delete(_ req: Request, sentence: Sentence) throws -> ResponseRepresentable {
+        let userId = try req.userId()
+        if sentence.userId != userId {
+            throw Abort.unauthorized
+        }
+        try sentence.delete()
+        return Response(status: .ok)
+    }
+    
+    func clear(_ req: Request) throws -> ResponseRepresentable {
+        let userId = try req.userId()
+        try Sentence.makeQuery().filter(Sentence.Properties.userId, userId).delete()
+        return Response(status: .ok)
+    }
     
     func makeResource() -> Resource<Sentence> {
         return Resource(
             index: index,
-            store: create
+            store: create,
+            show: show,
+            update: update,
+            destroy: delete,
+            clear: clear
         )
     }
 }
