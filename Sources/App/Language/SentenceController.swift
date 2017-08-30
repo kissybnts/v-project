@@ -8,12 +8,34 @@ final class SentenceController: ResourceRepresentable {
         return try sentences.makeJSON()
     }
     
+    func create(_ req: Request) throws -> ResponseRepresentable {
+        let sentence = try req.sentence()
+        let userId = try req.userId()
+        if sentence.userId != userId {
+            throw Abort.unauthorized
+        }
+        
+        try sentence.save()
+        
+        return sentence
+    }
+    
     
     func makeResource() -> Resource<Sentence> {
         return Resource(
-            index: index
+            index: index,
+            store: create
         )
     }
 }
 
 extension SentenceController: EmptyInitializable {}
+
+extension Request {
+    fileprivate func sentence() throws -> Sentence {
+        guard let json = json else {
+            throw Abort.badRequest
+        }
+        return try Sentence(json: json)
+    }
+}
