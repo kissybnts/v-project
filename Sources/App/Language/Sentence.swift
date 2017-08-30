@@ -30,6 +30,7 @@ final class Sentence: Model {
     
     func makeRow() throws -> Row {
         var row = Row()
+        try row.set(Properties.userId, userId)
         try row.set(Properties.original, original)
         try row.set(Properties.translation, translation)
         return  row
