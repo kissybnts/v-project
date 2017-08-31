@@ -25,5 +25,7 @@ extension Config {
         preparations.append(Note.self)
         preparations.append(Category.self)
         preparations.append(Sentence.self)
+        preparations.append(Tag.self)
+        preparations.append(Pivot<Tag, Note>.self)
     }
 }

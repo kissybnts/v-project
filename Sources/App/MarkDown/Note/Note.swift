@@ -78,6 +78,13 @@ extension Note: JSONConvertible {
         try json.set(Note.isPinnedKey, isPinned)
         return json
     }
+    
+    func makeJsonWithTags() throws -> JSON {
+        var json = try self.makeJSON()
+        let tags = try self.tags.all()
+        try json.set("tags", tags.makeJSON())
+        return json
+    }
 }
 
 extension Note: ResponseRepresentable {}
@@ -97,5 +104,11 @@ extension Note: Updateable {
                 note.isPinned = isPinned
             }
         ]
+    }
+}
+
+extension Note {
+    var tags: Siblings<Note, Tag, Pivot<Tag, Note>> {
+        return siblings()
     }
 }

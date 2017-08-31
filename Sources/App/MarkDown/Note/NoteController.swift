@@ -30,7 +30,7 @@ final class NoteController: ResourceRepresentable {
     }
     
     func show(_ req: Request, note: Note) throws -> ResponseRepresentable {
-        return note
+        return try note.makeJsonWithTags()
     }
     
     func delete(_ req: Request, note: Note) throws -> ResponseRepresentable {
