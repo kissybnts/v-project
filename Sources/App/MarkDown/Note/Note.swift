@@ -15,6 +15,7 @@ final class Note: Model {
     static let titleKey = "title"
     static let bodyKey = "body"
     static let isPinnedKey = "is_pinned"
+    static let foreinIdKey = "note_id"
     
     init(title: String, body: String, userId: Identifier, isPinned: Bool = false) {
         self.title = title
@@ -110,5 +111,19 @@ extension Note: Updateable {
 extension Note {
     var tags: Siblings<Note, Tag, Pivot<Tag, Note>> {
         return siblings()
+    }
+    func addTags(tags: [Tag]) throws -> Void {
+        guard let noteId = self.id else {
+            return
+        }
+        try tags.forEach { tag in
+            guard let tagId = tag.id else {
+                return
+            }
+            var row = Row()
+            try row.set(Note.foreinIdKey, noteId)
+            try row.set(Tag.foreignIdKey, tagId)
+            try Pivot<Tag, Note>(row: row).save()
+        }
     }
 }

@@ -1,4 +1,5 @@
 import Vapor
+import FluentProvider
 import HTTP
 
 final class NoteController: ResourceRepresentable {
@@ -26,6 +27,17 @@ final class NoteController: ResourceRepresentable {
         }
         
         try note.save()
+        
+        let tags = try req.tags()
+        
+        try tags.filter { tag in
+            return tag.id == nil
+        }.forEach { tag in
+            try tag.save()
+        }
+        
+        try note.addTags(tags: tags)
+
         return note
     }
     
@@ -109,6 +121,16 @@ extension Request {
             throw Abort.badRequest
         }
         return try Note(json: json)
+    }
+    func tags() throws -> [Tag] {
+        guard let json = json else {
+            return []
+        }
+        guard let tagIds: [Tag] = try json.get("tags") else {
+            return []
+        }
+        
+        return tagIds
     }
 }
 

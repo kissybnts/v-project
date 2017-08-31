@@ -1,6 +1,7 @@
 import Vapor
 import FluentProvider
 import HTTP
+import MySQLProvider
 
 final class Tag: Model {
     let storage = Storage()
@@ -10,10 +11,12 @@ final class Tag: Model {
     public struct Properties {
         public static let id = "id"
         public static let name = "name"
+        public static let foreinId = "tag_id"
     }
     
-    init(name: String) {
+    init(id: Identifier?, name: String) {
         self.name = name
+        self.id = id
     }
     
     init(row: Row) throws {
@@ -42,7 +45,10 @@ extension Tag: Preparation {
 
 extension Tag: JSONConvertible {
     convenience init(json: JSON) throws {
-        try self.init(name: json.get(Properties.name))
+        try self.init(
+            id: json.get(Properties.id),
+            name: json.get(Properties.name)
+        )
     }
     
     func makeJSON() throws -> JSON {
