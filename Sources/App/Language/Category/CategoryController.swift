@@ -25,7 +25,7 @@ final class CategoryController: ResourceRepresentable {
     }
     
     func show(_ req: Request, category: Category) throws -> ResponseRepresentable {
-        return category
+        return try category.makeJsonWithSentenes()
     }
     
     func update(_ req: Request, category: Category) throws -> ResponseRepresentable {
@@ -45,6 +45,8 @@ final class CategoryController: ResourceRepresentable {
         if category.userId != userId {
             throw Abort.unauthorized
         }
+        
+        try category.sentences.delete()
         
         try category.delete()
         return Response(status: .ok)

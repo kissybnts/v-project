@@ -59,9 +59,18 @@ extension Category: JSONConvertible {
         try json.set(Properties.name, name)
         return json
     }
+    
+    func makeJsonWithSentenes() throws -> JSON {
+        var json = try makeJSON()
+        let sentences = try self.sentences.all().makeJSON()
+        try json.set("sentences", sentences)
+        return json
+    }
 }
 
 extension Category: ResponseRepresentable {}
+
+extension Category: Timestampable {}
 
 extension Category: Updateable {
     public static var updateableKeys: [UpdateableKey<Category>] {
@@ -70,5 +79,11 @@ extension Category: Updateable {
                 category.name = name
             }
         ]
+    }
+}
+
+extension Category {
+    var sentences: Children<Category, Sentence> {
+        return children()
     }
 }
