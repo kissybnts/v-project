@@ -26,5 +26,6 @@ extension Droplet {
         try authed.resource("notes", NoteController.self)
         try authed.resource("sentences", SentenceController.self)
         try authed.resource("categories", CategoryController.self)
+        try authed.resource("tags", TagController.self)
     }
 }

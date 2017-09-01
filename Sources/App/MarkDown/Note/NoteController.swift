@@ -38,7 +38,7 @@ final class NoteController: ResourceRepresentable {
         
         try note.addTags(tags: tags)
 
-        return note
+        return try note.makeJsonWithTags(tags: tags)
     }
     
     func show(_ req: Request, note: Note) throws -> ResponseRepresentable {
@@ -73,7 +73,16 @@ final class NoteController: ResourceRepresentable {
         }
         
         try note.save()
-        return note
+        
+        let tags = try req.tags()
+        try tags.filter { tag in
+            return tag.id == nil
+        }.forEach { tag in
+            try tag.save()
+        }
+        try note.replaceTags(newTags: tags)
+        
+        return try note.makeJsonWithTags(tags: tags)
     }
     
     func replace(_ req: Request, note: Note) throws -> ResponseRepresentable {

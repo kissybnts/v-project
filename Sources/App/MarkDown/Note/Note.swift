@@ -85,9 +85,14 @@ extension Note: JSONConvertible {
     }
     
     func makeJsonWithTags() throws -> JSON {
-        var json = try self.makeJSON()
         let tags = try self.tags.all()
-        try json.set(Tag.JSONKeys.multi, tags.makeJSON())
+        let json = try makeJsonWithTags(tags: tags)
+        return json
+    }
+    
+    func makeJsonWithTags(tags: [Tag]) throws -> JSON {
+        var json = try makeJSON()
+        try json.set(Tag.JSONKeys.multi, try tags.makeJSON())
         return json
     }
     
@@ -120,15 +125,44 @@ extension Note {
     var tags: Siblings<Note, Tag, Pivot<Note, Tag>> {
         return siblings()
     }
+    
     func addTags(tags: [Tag]) throws -> Void {
-        guard (self.id != nil) else {
-            return
+        guard let noteId = self.id else {
+            throw Abort.serverError
         }
+        // TODO: need to tune up
         try tags.forEach { tag in
-            guard (tag.id != nil) else {
+            guard let tagId = tag.id else {
                 return
             }
-            try self.tags.add(tag)
+            // TODO: probably can refactor
+            var row = Row()
+            try row.set(Note.foreinIdKey, noteId)
+            try row.set(Tag.foreinIdKey, tagId)
+            try Pivot<Note, Tag>(row: row).save()
+        }
+    }
+    
+    func replaceTags(newTags: [Tag]) throws -> Void {
+        guard let noteId = self.id else {
+            throw Abort.serverError
+        }
+        // TODO: no need to access database to fetch tags
+        let tags = try self.tags.all()
+        // TODO: no need to access database each time
+        try tags.forEach { tag in
+            try self.tags.remove(tag)
+        }
+        // TODO: no need to access database each time
+        try newTags.forEach { tag in
+            guard let tagId = tag.id else {
+                throw Abort.serverError
+            }
+            // TODO: probably can refactor
+            var row = Row()
+            try row.set(Note.foreinIdKey, noteId)
+            try row.set(Tag.foreinIdKey, tagId)
+            try Pivot<Note, Tag>(row: row).save()
         }
     }
 }
