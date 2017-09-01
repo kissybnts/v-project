@@ -11,7 +11,7 @@ final class Sentence: Model {
     var translation: String
     
     public struct Properties {
-        public static let id = "id"
+        public static let id = PropertyKey.id
         public static let userId = User.foreignIdKey
         public static let categoryId = Category.foreinIdKey
         public static let original = "original"

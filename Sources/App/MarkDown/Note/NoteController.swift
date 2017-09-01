@@ -106,7 +106,7 @@ final class NoteController: ResourceRepresentable {
     private func getFilterParam(req: Request, userId: Identifier) -> Dictionary<String, NodeRepresentable> {
         var dic = Dictionary<String, NodeRepresentable>()
         
-        dic[User.foreignIdKey] = userId
+        dic[Note.Properties.userId] = userId
         if let isPinned = req.query?[Note.Properties.isPinned]?.bool {
             dic[Note.Properties.isPinned] = isPinned
         }

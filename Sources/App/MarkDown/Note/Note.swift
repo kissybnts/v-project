@@ -6,16 +6,17 @@ final class Note: Model {
 
     let storage = Storage()
     
+    let userId: Identifier
     var title: String
     var body: String
-    let userId: Identifier
     var isPinned: Bool
     
-    public struct Properties {
-        public static let id = "id"
-        public static let title = "title"
-        public static let body = "body"
-        public static let isPinned = "is_pinned"
+    internal struct Properties {
+        internal static let id = PropertyKey.id
+        internal static let userId = User.foreignIdKey
+        internal static let title = PropertyKey.title
+        internal static let body = "body"
+        internal static let isPinned = "is_pinned"
     }
     
     static let foreinIdKey = "note_id"
@@ -30,7 +31,7 @@ final class Note: Model {
     init(row: Row) throws {
         title = try row.get(Properties.title)
         body = try row.get(Properties.body)
-        userId = try row.get(User.foreignIdKey)
+        userId = try row.get(Properties.userId)
         isPinned = try row.get(Properties.isPinned)
     }
     
@@ -38,7 +39,7 @@ final class Note: Model {
         var row = Row()
         try row.set(Properties.title, title)
         try row.set(Properties.body, body)
-        try row.set(User.foreignIdKey, userId)
+        try row.set(Properties.userId, userId)
         try row.set(Properties.isPinned, isPinned)
         return row
     }
@@ -69,7 +70,7 @@ extension Note: JSONConvertible {
         try self.init(
             title: json.get(Properties.title),
             body: json.get(Properties.body),
-            userId: json.get(User.foreignIdKey),
+            userId: json.get(Properties.userId),
             isPinned: json.get(Properties.isPinned)
         )
     }

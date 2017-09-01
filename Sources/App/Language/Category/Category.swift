@@ -8,13 +8,13 @@ final class Category: Model {
     var name: String
     let userId: Identifier
     
-    public struct Properties {
-        public static let id = "id"
-        public static let name = "name"
+    internal struct Properties {
+        public static let id = PropertyKey.id
+        public static let name = PropertyKey.name
         public static let userId = User.foreignIdKey
     }
     
-    public static let foreinIdKey = "category_id"
+    internal static let foreinIdKey = "category_id"
     
     init(name: String, userId: Identifier) {
         self.name = name

@@ -9,10 +9,11 @@ final class Tag: Model {
     var name: String
     
     public struct Properties {
-        public static let id = "id"
-        public static let name = "name"
-        public static let foreinId = "tag_id"
+        public static let id = PropertyKey.id
+        public static let name = PropertyKey.name
     }
+    
+    static let foreinIdKey = "tag_id"
     
     init(id: Identifier?, name: String) {
         self.name = name
@@ -60,7 +61,7 @@ extension Tag: JSONConvertible {
     
     func makeJsonWithNotes(userId: Identifier) throws -> JSON {
         var json = try self.makeJSON()
-        let notes = try self.notes.makeQuery().filter(User.foreignIdKey, userId).sort(Note.idKey, .ascending).all()
+        let notes = try self.notes.makeQuery().filter(Note.Properties.userId, userId).sort(Note.Properties.id, .ascending).all()
         try json.set("notes", notes.makeJSON())
         return json
     }

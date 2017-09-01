@@ -10,11 +10,14 @@ final class User: Model {
     var password: String
     var email: String
     
-    static let idKey = "id"
+    internal struct Properties {
+        internal static let id = PropertyKey.id
+        internal static let name = PropertyKey.name
+        internal static let password = PropertyKey.password
+        internal static let email = PropertyKey.email
+    }
+    
     static let foreignIdKey = "user_id"
-    static let nameKey = "name"
-    static let passwordKey = "password"
-    static let emailKey = "email"
     
     init(name: String, password: String, email: String) {
         self.name = name
@@ -23,16 +26,16 @@ final class User: Model {
     }
     
     init(row: Row) throws {
-        name = try row.get(User.nameKey)
-        password = try row.get(User.passwordKey)
-        email = try row.get(User.emailKey)
+        name = try row.get(Properties.name)
+        password = try row.get(Properties.password)
+        email = try row.get(Properties.email)
     }
     
     func makeRow() throws -> Row {
         var row = Row()
-        try row.set(User.nameKey, name)
-        try row.set(User.passwordKey, password)
-        try row.set(User.emailKey, email)
+        try row.set(Properties.name, name)
+        try row.set(Properties.password, password)
+        try row.set(Properties.email, email)
         return row
     }
 }
@@ -41,9 +44,9 @@ extension User: Preparation {
     static func prepare(_ database: Database) throws {
         try database.create(self) { builder in
             builder.id()
-            builder.string(User.nameKey)
-            builder.string(User.passwordKey)
-            builder.string(User.emailKey, unique: true)
+            builder.string(Properties.name)
+            builder.string(Properties.password)
+            builder.string(Properties.email, unique: true)
         }
     }
     
@@ -55,17 +58,17 @@ extension User: Preparation {
 extension User: JSONConvertible {
     convenience init(json: JSON) throws {
         try self.init(
-            name: json.get(User.nameKey),
-            password: json.get(User.passwordKey),
-            email: json.get(User.emailKey)
+            name: json.get(Properties.name),
+            password: json.get(Properties.password),
+            email: json.get(Properties.email)
         )
     }
     
     func makeJSON() throws -> JSON {
         var json = JSON()
-        try json.set(User.idKey, id)
-        try json.set(User.nameKey, name)
-        try json.set(User.emailKey, email)
+        try json.set(Properties.id, id)
+        try json.set(Properties.name, name)
+        try json.set(Properties.email, email)
         return json
     }
     
@@ -84,13 +87,13 @@ extension User: Timestampable {}
 extension User: Updateable {
     public static var updateableKeys: [UpdateableKey<User>] {
         return [
-            UpdateableKey(User.nameKey, String.self) { user, name in
+            UpdateableKey(Properties.name, String.self) { user, name in
                 user.name = name
             },
-            UpdateableKey(User.passwordKey, String.self) { user, password in
+            UpdateableKey(Properties.password, String.self) { user, password in
                 user.password = password
             },
-            UpdateableKey(User.emailKey, String.self) { user, email in
+            UpdateableKey(Properties.email, String.self) { user, email in
                 user.email = email
             }
         ]

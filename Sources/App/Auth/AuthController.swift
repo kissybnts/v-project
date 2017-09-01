@@ -22,14 +22,14 @@ final class AuthController {
         guard let json = req.json else {
             throw Abort.badRequest
         }
-        guard let email: String = try json.get(User.emailKey) else {
+        guard let email: String = try json.get(User.Properties.email) else {
             throw Abort.badRequest
         }
-        guard let password: String = try json.get(User.passwordKey) else {
+        guard let password: String = try json.get(User.Properties.password) else {
             throw Abort.badRequest
         }
         
-        guard let user = try User.makeQuery().filter(User.emailKey, email).first() else {
+        guard let user = try User.makeQuery().filter(User.Properties.email, email).first() else {
             throw Abort.unauthorized
         }
         
@@ -39,7 +39,7 @@ final class AuthController {
             throw Abort.badRequest
         }
         
-        if let token = try AccessToken.makeQuery().filter(User.foreignIdKey, user.id!).first() {
+        if let token = try AccessToken.makeQuery().filter(AccessToken.Properties.userId, user.id!).first() {
             try token.delete()
         }
         
