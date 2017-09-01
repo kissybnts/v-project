@@ -55,8 +55,12 @@ extension AccessToken: JSONConvertible {
     
     func makeJSON() throws -> JSON {
         var json = JSON()
-        try json.set(Properties.token, token)
+        try json.set(JSONKeys.single, token)
         return json
+    }
+    
+    internal struct JSONKeys {
+        internal static let single = "token"
     }
 }
 

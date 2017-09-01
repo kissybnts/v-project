@@ -126,7 +126,7 @@ extension Request {
         guard let json = json else {
             return []
         }
-        guard let tagIds: [Tag] = try json.get("tags") else {
+        guard let tagIds: [Tag] = try json.get(Tag.JSONKeys.multi) else {
             return []
         }
         

@@ -76,6 +76,10 @@ extension Sentence: JSONConvertible {
         try json.set(Properties.translation, translation)
         return json
     }
+    
+    internal struct JSONKeys {
+        internal static let multi = "sentences"
+    }
 }
 
 extension Sentence: ResponseRepresentable {}

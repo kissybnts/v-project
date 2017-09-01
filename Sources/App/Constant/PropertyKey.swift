@@ -1,9 +1,9 @@
 internal struct PropertyKey {
-    public static let id = "id"
-    public static let name = "name"
-    public static let email = "email"
-    public static let password = "password"
-    public static let title = "title"
-    public static let updatedAt = "updated_at"
-    public static let createdAt = "created_at"
+    internal static let id = "id"
+    internal static let name = "name"
+    internal static let email = "email"
+    internal static let password = "password"
+    internal static let title = "title"
+    internal static let updatedAt = "updated_at"
+    internal static let createdAt = "created_at"
 }

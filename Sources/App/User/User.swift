@@ -74,9 +74,13 @@ extension User: JSONConvertible {
     
     func makeJSON(token: AccessToken) throws -> JSON {
         var json = JSON()
-        try json.set("user", makeJSON())
-        try json.set("token", token.token)
+        try json.set(JSONKeys.single, makeJSON())
+        try json.set(AccessToken.JSONKeys.single, token.token)
         return json
+    }
+    
+    internal struct JSONKeys {
+        internal static let single = "user"
     }
 }
 

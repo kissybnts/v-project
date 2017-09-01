@@ -63,7 +63,7 @@ extension Category: JSONConvertible {
     func makeJsonWithSentenes() throws -> JSON {
         var json = try makeJSON()
         let sentences = try self.sentences.all().makeJSON()
-        try json.set("sentences", sentences)
+        try json.set(Sentence.JSONKeys.multi, sentences)
         return json
     }
 }

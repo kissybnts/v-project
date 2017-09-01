@@ -87,8 +87,12 @@ extension Note: JSONConvertible {
     func makeJsonWithTags() throws -> JSON {
         var json = try self.makeJSON()
         let tags = try self.tags.all()
-        try json.set("tags", tags.makeJSON())
+        try json.set(Tag.JSONKeys.multi, tags.makeJSON())
         return json
+    }
+    
+    internal struct JSONKeys {
+        internal static let multi = "notes"
     }
 }
 

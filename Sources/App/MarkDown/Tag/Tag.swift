@@ -62,8 +62,12 @@ extension Tag: JSONConvertible {
     func makeJsonWithNotes(userId: Identifier) throws -> JSON {
         var json = try self.makeJSON()
         let notes = try self.notes.makeQuery().filter(Note.Properties.userId, userId).sort(Note.Properties.id, .ascending).all()
-        try json.set("notes", notes.makeJSON())
+        try json.set(Note.JSONKeys.multi, notes.makeJSON())
         return json
+    }
+    
+    internal struct JSONKeys {
+        internal static let multi = "tags"
     }
 }
 
