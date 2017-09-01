@@ -117,21 +117,18 @@ extension Note: Updateable {
 }
 
 extension Note {
-    var tags: Siblings<Note, Tag, Pivot<Tag, Note>> {
+    var tags: Siblings<Note, Tag, Pivot<Note, Tag>> {
         return siblings()
     }
     func addTags(tags: [Tag]) throws -> Void {
-        guard let noteId = self.id else {
+        guard (self.id != nil) else {
             return
         }
         try tags.forEach { tag in
-            guard let tagId = tag.id else {
+            guard (tag.id != nil) else {
                 return
             }
-            var row = Row()
-            try row.set(Note.foreinIdKey, noteId)
-            try row.set(Tag.foreignIdKey, tagId)
-            try Pivot<Tag, Note>(row: row).save()
+            try self.tags.add(tag)
         }
     }
 }
