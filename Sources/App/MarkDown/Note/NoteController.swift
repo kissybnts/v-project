@@ -14,7 +14,7 @@ final class NoteController: ResourceRepresentable {
             try query.filter(key, value)
         }
         
-        let notes = try query.sort(Note.idKey, .ascending).all()
+        let notes = try query.sort(Note.Properties.id, .ascending).all()
         return try notes.makeJSON()
     }
     
@@ -107,8 +107,8 @@ final class NoteController: ResourceRepresentable {
         var dic = Dictionary<String, NodeRepresentable>()
         
         dic[User.foreignIdKey] = userId
-        if let isPinned = req.query?[Note.isPinnedKey]?.bool {
-            dic[Note.isPinnedKey] = isPinned
+        if let isPinned = req.query?[Note.Properties.isPinned]?.bool {
+            dic[Note.Properties.isPinned] = isPinned
         }
         
         return dic

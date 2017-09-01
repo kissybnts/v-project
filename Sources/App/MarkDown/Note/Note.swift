@@ -11,10 +11,13 @@ final class Note: Model {
     let userId: Identifier
     var isPinned: Bool
     
-    static let idKey = "id"
-    static let titleKey = "title"
-    static let bodyKey = "body"
-    static let isPinnedKey = "is_pinned"
+    public struct Properties {
+        public static let id = "id"
+        public static let title = "title"
+        public static let body = "body"
+        public static let isPinned = "is_pinned"
+    }
+    
     static let foreinIdKey = "note_id"
     
     init(title: String, body: String, userId: Identifier, isPinned: Bool = false) {
@@ -25,18 +28,18 @@ final class Note: Model {
     }
     
     init(row: Row) throws {
-        title = try row.get(Note.titleKey)
-        body = try row.get(Note.bodyKey)
+        title = try row.get(Properties.title)
+        body = try row.get(Properties.body)
         userId = try row.get(User.foreignIdKey)
-        isPinned = try row.get(Note.isPinnedKey)
+        isPinned = try row.get(Properties.isPinned)
     }
     
     func makeRow() throws -> Row {
         var row = Row()
-        try row.set(Note.titleKey, title)
-        try row.set(Note.bodyKey, body)
+        try row.set(Properties.title, title)
+        try row.set(Properties.body, body)
         try row.set(User.foreignIdKey, userId)
-        try row.set(Note.isPinnedKey, isPinned)
+        try row.set(Properties.isPinned, isPinned)
         return row
     }
     
@@ -49,10 +52,10 @@ extension Note: Preparation {
     static func prepare(_ databese: Database) throws {
         try databese.create(self) { builder in
             builder.id()
-            builder.string(Note.titleKey)
-            builder.custom(Note.bodyKey, type: "text")
+            builder.string(Properties.title)
+            builder.custom(Properties.body, type: "text")
             builder.parent(User.self)
-            builder.bool(Note.isPinnedKey, default: false)
+            builder.bool(Properties.isPinned, default: false)
         }
     }
     
@@ -64,19 +67,19 @@ extension Note: Preparation {
 extension Note: JSONConvertible {
     convenience init(json: JSON) throws {
         try self.init(
-            title: json.get(Note.titleKey),
-            body: json.get(Note.bodyKey),
+            title: json.get(Properties.title),
+            body: json.get(Properties.body),
             userId: json.get(User.foreignIdKey),
-            isPinned: json.get(Note.isPinnedKey)
+            isPinned: json.get(Properties.isPinned)
         )
     }
     
     func makeJSON() throws -> JSON {
         var json = JSON()
-        try json.set(Note.idKey, id)
-        try json.set(Note.titleKey, title)
-        try json.set(Note.bodyKey, body)
-        try json.set(Note.isPinnedKey, isPinned)
+        try json.set(Properties.id, id)
+        try json.set(Properties.title, title)
+        try json.set(Properties.body, body)
+        try json.set(Properties.isPinned, isPinned)
         return json
     }
     
@@ -95,13 +98,13 @@ extension Note: Timestampable {}
 extension Note: Updateable {
     public static var updateableKeys: [UpdateableKey<Note>] {
         return [
-            UpdateableKey(Note.titleKey, String.self) { note, title in
+            UpdateableKey(Properties.title, String.self) { note, title in
                 note.title = title
             },
-            UpdateableKey(Note.bodyKey, String.self) { note, body in
+            UpdateableKey(Properties.body, String.self) { note, body in
                 note.body = body
             },
-            UpdateableKey(Note.isPinnedKey, Bool.self) { note, isPinned in
+            UpdateableKey(Properties.isPinned, Bool.self) { note, isPinned in
                 note.isPinned = isPinned
             }
         ]
