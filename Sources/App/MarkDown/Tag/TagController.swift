@@ -30,10 +30,16 @@ final class TagController: ResourceRepresentable {
         return tag
     }
     
-//    func delete(_ req: Request, tag: Tag) throws -> ResponseRepresentable {
-//        
-//        
-//    }
+    func delete(_ req: Request, tag: Tag) throws -> ResponseRepresentable {
+        // TODO: no need to fetch notes from database
+        let notes = try tag.notes.all()
+        // TODO: no need to access database for each note
+        try notes.forEach { note in
+            try tag.notes.remove(note)
+        }
+        try tag.delete()
+        return Response(status: .ok)
+    }
     
     func makeResource() -> Resource<Tag> {
         return Resource(
