@@ -48,8 +48,8 @@ extension Sentence: Preparation {
             builder.id()
             builder.parent(User.self)
             builder.parent(Category.self)
-            builder.custom(Properties.original, type: "text")
-            builder.custom(Properties.translation, type: "text")
+            builder.text(Properties.original)
+            builder.text(Properties.translation)
         }
     }
     

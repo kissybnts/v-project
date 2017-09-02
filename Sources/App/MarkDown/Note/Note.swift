@@ -53,9 +53,9 @@ extension Note: Preparation {
     static func prepare(_ databese: Database) throws {
         try databese.create(self) { builder in
             builder.id()
-            builder.string(Properties.title)
-            builder.custom(Properties.body, type: "text")
             builder.parent(User.self)
+            builder.string(Properties.title)
+            builder.text(Properties.body)
             builder.bool(Properties.isPinned, default: false)
         }
     }
