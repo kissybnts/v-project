@@ -70,6 +70,35 @@ final class CategoryController: ResourceRepresentable {
             clear: clear
         )
     }
+    
+    static func createNote(_ req: Request) throws -> ResponseRepresentable {
+        let category = try req.parameters.next(Category.self)
+
+        let userId = try req.userId()
+        
+        if category.userId != userId {
+            throw Abort.unauthorized
+        }
+        
+        let sentences = try category.sentences.all()
+        
+        let originals = sentences.map { sentence in
+            return sentence.original
+        }.joined(separator: "\n")
+        
+        let translations = sentences.map { sentence in
+            return sentence.translation
+        }.joined(separator: "\n")
+        
+        let originalHeader = "# Original text\n"
+        let translationHeader = "# Translation text\n"
+        
+        let body = "\(originalHeader)\n\(originals)\n\n\(translationHeader)\n\(translations)"
+        
+        let note = Note(title: category.name, body: body, userId: userId)
+        try note.save()
+        return note
+    }
 }
 
 extension CategoryController: EmptyInitializable {}

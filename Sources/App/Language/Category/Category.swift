@@ -4,6 +4,7 @@ import HTTP
 
 final class Category: Model {
     let storage = Storage()
+    static let entity = "categories"
     
     var name: String
     let userId: Identifier

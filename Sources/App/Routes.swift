@@ -24,8 +24,9 @@ extension Droplet {
             me.get("notes", handler: userController.notes)
         }
         try authed.resource("notes", NoteController.self)
+        try authed.resource("tags", TagController.self)
         try authed.resource("sentences", SentenceController.self)
         try authed.resource("categories", CategoryController.self)
-        try authed.resource("tags", TagController.self)
+        authed.post("categories", ":category_id", "create-note", handler: CategoryController.createNote)
     }
 }
