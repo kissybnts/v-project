@@ -122,47 +122,25 @@ extension Note: Updateable {
 }
 
 extension Note {
-    var tags: Siblings<Note, Tag, Pivot<Note, Tag>> {
+    var tags: Siblings<Note, Tag, TagNoteRelation> {
         return siblings()
     }
     
     func addTags(tags: [Tag]) throws -> Void {
-        guard let noteId = self.id else {
-            throw Abort.serverError
-        }
         // TODO: need to tune up
         try tags.forEach { tag in
-            guard let tagId = tag.id else {
-                return
-            }
-            // TODO: probably can refactor
-            var row = Row()
-            try row.set(Note.foreinIdKey, noteId)
-            try row.set(Tag.foreinIdKey, tagId)
-            try Pivot<Note, Tag>(row: row).save()
+            let relation = try TagNoteRelation(tag: tag, note: self)
+            try relation.save()
         }
     }
     
     func replaceTags(newTags: [Tag]) throws -> Void {
-        guard let noteId = self.id else {
-            throw Abort.serverError
-        }
-        // TODO: no need to access database to fetch tags
-        let tags = try self.tags.all()
-        // TODO: no need to access database each time
-        try tags.forEach { tag in
-            try self.tags.remove(tag)
-        }
+        try TagNoteRelation.deleteAllByNote(note: self)
         // TODO: no need to access database each time
         try newTags.forEach { tag in
-            guard let tagId = tag.id else {
-                throw Abort.serverError
-            }
             // TODO: probably can refactor
-            var row = Row()
-            try row.set(Note.foreinIdKey, noteId)
-            try row.set(Tag.foreinIdKey, tagId)
-            try Pivot<Note, Tag>(row: row).save()
+            let relation = try TagNoteRelation(tag: tag, note: self)
+            try relation.save()
         }
     }
 }

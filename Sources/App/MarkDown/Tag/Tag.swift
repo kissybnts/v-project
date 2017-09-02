@@ -93,7 +93,7 @@ extension Tag: Updateable {
 }
 
 extension Tag {
-    var notes: Siblings<Tag, Note, Pivot<Tag, Note>> {
+    var notes: Siblings<Tag, Note, TagNoteRelation> {
         return siblings()
     }
 }

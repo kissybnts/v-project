@@ -26,6 +26,6 @@ extension Config {
         preparations.append(Category.self)
         preparations.append(Sentence.self)
         preparations.append(Tag.self)
-        preparations.append(Pivot<Tag, Note>.self)
+        preparations.append(TagNoteRelation.self)
     }
 }
