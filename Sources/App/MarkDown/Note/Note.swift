@@ -138,7 +138,6 @@ extension Note {
         try TagNoteRelation.deleteAllByNote(note: self)
         // TODO: no need to access database each time
         try newTags.forEach { tag in
-            // TODO: probably can refactor
             let relation = try TagNoteRelation(tag: tag, note: self)
             try relation.save()
         }

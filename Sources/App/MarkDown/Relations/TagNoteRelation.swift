@@ -47,8 +47,8 @@ extension TagNoteRelation: Preparation {
     static func prepare(_ database: Database) throws {
         try database.create(self) { builder in
             builder.id()
-            builder.foreignKey(for: Tag.self)
-            builder.foreignKey(for: Note.self)
+            builder.foreignId(for: Tag.self)
+            builder.foreignId(for: Note.self)
         }
     }
     static func revert(_ database: Database) throws {
