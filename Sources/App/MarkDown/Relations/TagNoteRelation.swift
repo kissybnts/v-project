@@ -73,4 +73,8 @@ extension TagNoteRelation {
         
         try TagNoteRelation.makeQuery().filter(Properties.noteId, noteId).delete()
     }
+    
+    internal static func deleteAllByUserId(userId: Identifier) throws -> Void {
+        try TagNoteRelation.database?.raw("DELETE `tag_note` from `tag_note` INNER JOIN `notes` ON `tag_note`.`note_id` = `notes`.`id` INNER JOIN `users` ON `notes`.`user_id` = `users`.`id` WHERE `users`.`id` = ?", [userId])
+    }
 }

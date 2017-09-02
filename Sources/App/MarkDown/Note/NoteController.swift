@@ -51,7 +51,7 @@ final class NoteController: ResourceRepresentable {
         if userId != note.userId {
             throw Abort.unauthorized
         }
-        
+        try TagNoteRelation.deleteAllByNote(note: note)
         try note.delete()
         return Response(status: .ok)
     }
@@ -60,6 +60,9 @@ final class NoteController: ResourceRepresentable {
         guard let userId = try req.user().id else {
             throw Abort.unauthorized
         }
+        
+        try TagNoteRelation.deleteAllByUserId(userId: userId)
+        
         try Note.makeQuery().filter(User.foreignIdKey, userId).delete()
         return Response(status: .ok)
     }
