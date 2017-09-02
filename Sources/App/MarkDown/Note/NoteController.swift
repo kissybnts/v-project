@@ -85,28 +85,12 @@ final class NoteController: ResourceRepresentable {
         return try note.makeJsonWithTags(tags: tags)
     }
     
-    func replace(_ req: Request, note: Note) throws -> ResponseRepresentable {
-        let userId = try req.userId()
-        if userId != note.userId {
-            throw Abort.unauthorized
-        }
-        let new = try req.note()
-        
-        note.title = new.title
-        note.body = new.body
-        
-        try note.save()
-        
-        return note
-    }
-    
     func makeResource() -> Resource<Note> {
         return Resource(
             index: index,
             store: create,
             show: show,
             update: update,
-            replace: replace,
             destroy: delete,
             clear: clear
         )
