@@ -2,13 +2,14 @@ import HTTP
 
 extension Request {
     func user() throws -> User {
-        return try auth.assertAuthenticated()
-    }
-    func userId() throws -> Identifier {
-        let user: User = try self.user()
-        if let userId = user.id {
-            return userId
+        let userId = try self.userId()
+        guard let user = try User.makeQuery().find(userId) else {
+            throw Abort.notFound
         }
-        throw Abort.unauthorized
+        return user
+    }
+    func userId() throws -> Int {
+        let userId: UserId = try auth.assertAuthenticated()
+        return userId.value
     }
 }

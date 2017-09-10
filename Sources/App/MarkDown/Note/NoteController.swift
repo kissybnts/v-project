@@ -22,9 +22,7 @@ final class NoteController: ResourceRepresentable {
         let userId = try req.userId()
         let note = try req.note()
         
-        if note.userId != userId {
-            throw Abort.unauthorized
-        }
+        try note.checkIsSameUserId(requestedUserId: userId)
         
         try note.save()
         
@@ -48,9 +46,8 @@ final class NoteController: ResourceRepresentable {
     func delete(_ req: Request, note: Note) throws -> ResponseRepresentable {
         let userId = try req.userId()
         
-        if userId != note.userId {
-            throw Abort.unauthorized
-        }
+        try note.checkIsSameUserId(requestedUserId: userId)
+        
         try TagNoteRelation.deleteAllByNote(note: note)
         try note.delete()
         return Response(status: .ok)
@@ -71,9 +68,7 @@ final class NoteController: ResourceRepresentable {
         let userId = try req.userId()
         try note.update(for: req)
         
-        if userId != note.userId {
-            throw Abort.unauthorized
-        }
+        try note.checkIsSameUserId(requestedUserId: userId)
         
         try note.save()
         
@@ -99,7 +94,7 @@ final class NoteController: ResourceRepresentable {
         )
     }
     
-    private func getFilterParam(req: Request, userId: Identifier) -> Dictionary<String, NodeRepresentable> {
+    private func getFilterParam(req: Request, userId: Int) -> Dictionary<String, NodeRepresentable> {
         var dic = Dictionary<String, NodeRepresentable>()
         
         dic[Note.Properties.userId] = userId

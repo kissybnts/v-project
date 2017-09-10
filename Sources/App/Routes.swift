@@ -13,7 +13,7 @@ extension Droplet {
             unAuthed.post("login", handler: authController.login)
         }
 
-        let tokenMiddleware = PayloadAuthenticationMiddleware(self.signers!.first!.value, [], User.self)
+        let tokenMiddleware = PayloadAuthenticationMiddleware(self.signers!.first!.value, [], UserId.self)
         
         // properly token is required to access
         let authed = grouped(tokenMiddleware).grouped("v1")

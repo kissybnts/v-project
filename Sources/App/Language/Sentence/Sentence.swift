@@ -2,7 +2,7 @@ import Vapor
 import FluentProvider
 import HTTP
 
-final class Sentence: Model {
+final class Sentence: Model, UserRelationModel {
     let storage = Storage()
     
     let userId: Identifier

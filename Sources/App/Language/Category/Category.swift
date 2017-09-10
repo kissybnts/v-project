@@ -2,7 +2,7 @@ import Vapor
 import FluentProvider
 import HTTP
 
-final class Category: Model {
+final class Category: Model, UserRelationModel {
     let storage = Storage()
     static let entity = "categories"
     

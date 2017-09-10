@@ -15,9 +15,7 @@ final class CategoryController: ResourceRepresentable {
         let category = try req.category()
         let userId = try req.userId()
         
-        if category.userId != userId {
-            throw Abort.unauthorized
-        }
+        try category.checkIsSameUserId(requestedUserId: userId)
         
         try category.save()
         
@@ -30,7 +28,7 @@ final class CategoryController: ResourceRepresentable {
     
     func update(_ req: Request, category: Category) throws -> ResponseRepresentable {
         let userId = try req.userId()
-        if category.userId != userId {
+        if category.userId.wrapped.int != userId {
             throw Abort.unauthorized
         }
         
@@ -42,9 +40,7 @@ final class CategoryController: ResourceRepresentable {
     
     func delete(_ req: Request, category: Category) throws -> ResponseRepresentable {
         let userId = try req.userId()
-        if category.userId != userId {
-            throw Abort.unauthorized
-        }
+        try category.checkIsSameUserId(requestedUserId: userId)
         
         try category.sentences.delete()
         
@@ -76,9 +72,7 @@ final class CategoryController: ResourceRepresentable {
 
         let userId = try req.userId()
         
-        if category.userId != userId {
-            throw Abort.unauthorized
-        }
+        try category.checkIsSameUserId(requestedUserId: userId)
         
         let sentences = try category.sentences.all()
         
@@ -95,7 +89,7 @@ final class CategoryController: ResourceRepresentable {
         
         let body = "\(originalHeader)\n\(originals)\n\n\(translationHeader)\n\(translations)"
         
-        let note = Note(title: category.name, body: body, userId: userId)
+        let note = Note(title: category.name, body: body, userId: Identifier(userId))
         try note.save()
         return note
     }

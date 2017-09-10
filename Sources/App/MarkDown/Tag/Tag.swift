@@ -59,7 +59,7 @@ extension Tag: JSONConvertible {
         return json
     }
     
-    func makeJsonWithNotes(userId: Identifier) throws -> JSON {
+    func makeJsonWithNotes(userId: Int) throws -> JSON {
         var json = try makeJSON()
         let notes = try self.notes.makeQuery().filter(Note.Properties.userId, userId).sort(Note.Properties.id, .ascending).all()
         try json.set(Note.JSONKeys.multi, notes.makeJSON())
