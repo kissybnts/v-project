@@ -1,5 +1,6 @@
 import Vapor
 import AuthProvider
+import JWTProvider
 
 extension Droplet {
     func setupRoutes() throws {
@@ -12,7 +13,7 @@ extension Droplet {
             unAuthed.post("login", handler: authController.login)
         }
 
-        let tokenMiddleware = TokenAuthenticationMiddleware(User.self)
+        let tokenMiddleware = PayloadAuthenticationMiddleware(self.signers!.first!.value, [], User.self)
         
         // properly token is required to access
         let authed = grouped(tokenMiddleware).grouped("v1")

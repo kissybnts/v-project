@@ -12,7 +12,7 @@ final class SentenceController: ResourceRepresentable {
         let sentence = try req.sentence()
         let userId = try req.userId()
         if sentence.userId != userId {
-            throw Abort.unauthorized
+            return Response(status: .forbidden, body: "forbbiden")
         }
         
         try sentence.save()
@@ -27,7 +27,7 @@ final class SentenceController: ResourceRepresentable {
     func update(_ req: Request, sentence: Sentence) throws -> ResponseRepresentable {
         let userId = try req.userId()
         if sentence.userId != userId {
-            throw Abort.unauthorized
+            throw Abort.init(.forbidden)
         }
         try sentence.update(for: req)
         try sentence.save()
@@ -38,7 +38,7 @@ final class SentenceController: ResourceRepresentable {
     func delete(_ req: Request, sentence: Sentence) throws -> ResponseRepresentable {
         let userId = try req.userId()
         if sentence.userId != userId {
-            throw Abort.unauthorized
+            throw Abort.init(.forbidden)
         }
         try sentence.delete()
         return Response(status: .ok)

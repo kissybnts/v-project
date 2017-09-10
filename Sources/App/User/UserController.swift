@@ -9,7 +9,6 @@ final class UserController {
     
     func delete(_ req: Request) throws -> ResponseRepresentable {
         let user = try req.user()
-        try AccessToken.makeQuery().filter(User.foreignIdKey, user.id!).delete()
         try user.delete()
         return Response(status: .ok)
     }

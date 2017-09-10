@@ -14,38 +14,23 @@ final class AuthController {
         user.password = try encrypt(row: user.password)
         try user.save()
         let token = try getToken(user: user)
-        try token.save()
         return try user.makeJSON(token: token)
     }
     
     func login(_ req: Request) throws -> ResponseRepresentable {
-        guard let json = req.json else {
-            throw Abort.badRequest
-        }
-        guard let email: String = try json.get(User.Properties.email) else {
-            throw Abort.badRequest
-        }
-        guard let password: String = try json.get(User.Properties.password) else {
-            throw Abort.badRequest
-        }
+        let loginRequest = try req.loginRequest()
         
-        guard let user = try User.makeQuery().filter(User.Properties.email, email).first() else {
+        guard let user = try User.makeQuery().filter(User.Properties.email, loginRequest.email).first() else {
             throw Abort.unauthorized
         }
         
-        let isMatched = try drop.cipher.match(row: password, encrypted: user.password)
+        let isMatched = try drop.cipher.match(row: loginRequest.password, encrypted: user.password)
         
         if !isMatched {
             throw Abort.badRequest
         }
-        
-        if let token = try AccessToken.makeQuery().filter(AccessToken.Properties.userId, user.id!).first() {
-            try token.delete()
-        }
-        
+
         let token = try getToken(user: user)
-        
-        try token.save()
         
         return try user.makeJSON(token: token)
     }
@@ -55,13 +40,12 @@ final class AuthController {
         return encrypted
     }
     
-    private func getToken(user: User) throws -> AccessToken {
+    private func getToken(user: User) throws -> String {
         guard let userId = user.id else {
             throw Abort.badRequest
         }
-        let hash = try drop.hash.make("sio\(user.email)\(user.updatedAt!.hashValue)").makeString()
-        let token = AccessToken(token: hash, userId: userId)
-        return token
+        let jwtToken = try drop.createJwtToken(userId.wrapped.int!)
+        return jwtToken
     }
 }
 
@@ -72,6 +56,14 @@ extension Request {
         }
         
         return try User(json: json)
+    }
+    
+    func loginRequest() throws -> LoginRequest {
+        guard let json = json else {
+            throw Abort.badRequest
+        }
+        
+        return try LoginRequest(json: json)
     }
 }
 
