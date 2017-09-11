@@ -13,6 +13,8 @@ final class SentenceController: ResourceRepresentable {
         let userId = try req.userId()
         try sentence.checkIsSameUserId(requestedUserId: userId)
         
+        try CategoryService.checkIsUsers(categoryId: sentence.categoryId, userId: sentence.userId)
+        
         try sentence.save()
         
         return sentence
