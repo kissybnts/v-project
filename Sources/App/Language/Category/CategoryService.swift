@@ -9,4 +9,24 @@ internal final class CategoryService {
             throw Abort.badRequest
         }
     }
+    
+    static func createNote(category: Category) throws -> Note {
+        let sentences = try category.sentences.all()
+        
+        let originals = sentences.map { sentence in
+                return sentence.original
+            }.joined(separator: "\n")
+        
+        let translations = sentences.map { sentence in
+                return sentence.translation
+            }.joined(separator: "\n")
+        
+        let originalHeader = "# Original text\n"
+        let translationHeader = "# Translation text\n"
+        
+        let body = "\(originalHeader)\n\(originals)\n\n\(translationHeader)\n\(translations)"
+        
+        let note = Note(title: category.name, body: body, userId: category.userId)
+        return note
+    }
 }

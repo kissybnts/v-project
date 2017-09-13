@@ -74,22 +74,8 @@ final class CategoryController: ResourceRepresentable {
         
         try category.checkIsSameUserId(requestedUserId: userId)
         
-        let sentences = try category.sentences.all()
-        
-        let originals = sentences.map { sentence in
-            return sentence.original
-        }.joined(separator: "\n")
-        
-        let translations = sentences.map { sentence in
-            return sentence.translation
-        }.joined(separator: "\n")
-        
-        let originalHeader = "# Original text\n"
-        let translationHeader = "# Translation text\n"
-        
-        let body = "\(originalHeader)\n\(originals)\n\n\(translationHeader)\n\(translations)"
-        
-        let note = Note(title: category.name, body: body, userId: Identifier(userId))
+        let note = try CategoryService.createNote(category: category)
+
         try note.save()
         return note
     }
