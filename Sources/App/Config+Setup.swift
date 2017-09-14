@@ -11,6 +11,7 @@ extension Config {
 
         try setupProviders()
         try setupPreparations()
+        addConfigurable(middleware: ErrorHandlerMiddleware(), name: "my-error-handler")
     }
     
     /// Configure providers
