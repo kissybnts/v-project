@@ -11,7 +11,7 @@ final class SentenceController: ResourceRepresentable {
     func create(_ req: Request) throws -> ResponseRepresentable {
         let sentence = try req.sentence()
         let userId = try req.userId()
-        try sentence.checkIsSameUserId(requestedUserId: userId)
+        try sentence.checkIsSameUserId(requesterUserId: userId)
         
         try CategoryService.checkIsUsers(categoryId: sentence.categoryId, userId: sentence.userId)
         
@@ -26,7 +26,7 @@ final class SentenceController: ResourceRepresentable {
     
     func update(_ req: Request, sentence: Sentence) throws -> ResponseRepresentable {
         let userId = try req.userId()
-        try sentence.checkIsSameUserId(requestedUserId: userId)
+        try sentence.checkIsSameUserId(requesterUserId: userId)
         try sentence.update(for: req)
         try sentence.save()
         
@@ -35,7 +35,7 @@ final class SentenceController: ResourceRepresentable {
     
     func delete(_ req: Request, sentence: Sentence) throws -> ResponseRepresentable {
         let userId = try req.userId()
-        try sentence.checkIsSameUserId(requestedUserId: userId)
+        try sentence.checkIsSameUserId(requesterUserId: userId)
         try sentence.delete()
         return Response(status: .ok)
     }

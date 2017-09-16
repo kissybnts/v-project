@@ -15,7 +15,7 @@ final class CategoryController: ResourceRepresentable {
         let category = try req.category()
         let userId = try req.userId()
         
-        try category.checkIsSameUserId(requestedUserId: userId)
+        try category.checkIsSameUserId(requesterUserId: userId)
         
         try category.save()
         
@@ -28,9 +28,7 @@ final class CategoryController: ResourceRepresentable {
     
     func update(_ req: Request, category: Category) throws -> ResponseRepresentable {
         let userId = try req.userId()
-        if category.userId.wrapped.int != userId {
-            throw Abort.unauthorized
-        }
+        try category.checkIsSameUserId(requesterUserId: userId)
         
         try category.update(for: req)
         try category.save()
@@ -40,7 +38,7 @@ final class CategoryController: ResourceRepresentable {
     
     func delete(_ req: Request, category: Category) throws -> ResponseRepresentable {
         let userId = try req.userId()
-        try category.checkIsSameUserId(requestedUserId: userId)
+        try category.checkIsSameUserId(requesterUserId: userId)
         
         try category.sentences.delete()
         
@@ -72,7 +70,7 @@ final class CategoryController: ResourceRepresentable {
 
         let userId = try req.userId()
         
-        try category.checkIsSameUserId(requestedUserId: userId)
+        try category.checkIsSameUserId(requesterUserId: userId)
         
         let note = try CategoryService.createNote(category: category)
 
