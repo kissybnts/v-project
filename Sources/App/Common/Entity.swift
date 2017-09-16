@@ -7,10 +7,10 @@ protocol UserRelationModel {
 extension UserRelationModel {
     func checkIsSameUserId(requestedUserId: Int) throws -> Void {
         guard let id = self.userId.wrapped.int else {
-            throw Abort(.forbidden)
+            throw AuthorizationError.userIdMisMatch(requestedId: requestedUserId, targetId: nil)
         }
         if id != requestedUserId {
-            throw Abort(.forbidden)
+            throw AuthorizationError.userIdMisMatch(requestedId: requestedUserId, targetId: id)
         }
     }
 }
