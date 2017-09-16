@@ -22,7 +22,7 @@ final class NoteController: ResourceRepresentable {
         let userId = try req.userId()
         let note = try req.note()
         
-        try note.checkIsSameUserId(requestedUserId: userId)
+        try note.checkIsSameUserId(requesterUserId: userId)
         
         try note.save()
         
@@ -46,7 +46,7 @@ final class NoteController: ResourceRepresentable {
     func delete(_ req: Request, note: Note) throws -> ResponseRepresentable {
         let userId = try req.userId()
         
-        try note.checkIsSameUserId(requestedUserId: userId)
+        try note.checkIsSameUserId(requesterUserId: userId)
         
         try TagNoteRelation.deleteAllByNote(note: note)
         try note.delete()
@@ -68,7 +68,7 @@ final class NoteController: ResourceRepresentable {
         let userId = try req.userId()
         try note.update(for: req)
         
-        try note.checkIsSameUserId(requestedUserId: userId)
+        try note.checkIsSameUserId(requesterUserId: userId)
         
         try note.save()
         
