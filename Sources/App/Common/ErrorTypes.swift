@@ -5,4 +5,5 @@ enum ValidationError: Error {
 
 enum AuthorizationError: Error {
     case userIdMisMatch(requestedId: Int?, targetId: Int?)
+    case badCredential(email: String)
 }

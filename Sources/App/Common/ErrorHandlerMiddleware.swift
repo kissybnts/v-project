@@ -14,6 +14,9 @@ final class ErrorHandlerMiddleware: Middleware {
         } catch ValidationError.invalidData (let error) {
             print("\(error.parameterName) is invalid. requested value is \(error.dataString)")
             return try makeErrorResponse(status: .badRequest, message: "\(error.parameterName) is invalid")
+        } catch let AuthorizationError.badCredential (email) {
+            print("Login failed: email = \(email)")
+            return try makeErrorResponse(status: .notFound, message: "Email or password is wrong")
         } catch let error {
             print(error.localizedDescription)
             return try makeErrorResponse(status: .internalServerError, message: "Internal server error occurred")

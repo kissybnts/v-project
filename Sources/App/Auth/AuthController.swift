@@ -21,13 +21,13 @@ final class AuthController {
         let loginRequest = try req.loginRequest()
         
         guard let user = try User.makeQuery().filter(User.Properties.email, loginRequest.email).first() else {
-            throw Abort.unauthorized
+            throw AuthorizationError.badCredential(email: loginRequest.email)
         }
         
         let isMatched = try drop.cipher.match(row: loginRequest.password, encrypted: user.password)
         
         if !isMatched {
-            throw Abort.badRequest
+            throw AuthorizationError.badCredential(email: loginRequest.email)
         }
 
         let token = try getToken(user: user)
