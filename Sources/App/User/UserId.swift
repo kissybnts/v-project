@@ -27,7 +27,11 @@ final class UserId: PayloadAuthenticatable, TokenAuthenticatable {
         // TODO: need to update to use
         try jwt.verifySignature(using: HS256(key: "SIGNING_KEY".makeBytes()))
         let time = ExpirationTimeClaim(date: Date())
-        try jwt.verifyClaims([time])
+        do {
+            try jwt.verifyClaims([time])
+        } catch JWTError.verificationFailedForClaim {
+            throw AuthError.tokenExpired
+        }
         guard let userId = jwt.payload.object?[SubjectClaim.name]?.int else {
             throw AuthenticationError.invalidCredentials
         }

@@ -3,7 +3,8 @@ enum ValidationError: Error {
     case invalidData(parameterName: String, dataString: String)
 }
 
-enum AuthorizationError: Error {
+enum AuthError: Error {
     case userIdMisMatch(requestedId: Int?, targetId: Int?)
     case badCredential(email: String)
+    case tokenExpired
 }

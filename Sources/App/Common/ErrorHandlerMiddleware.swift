@@ -5,7 +5,7 @@ final class ErrorHandlerMiddleware: Middleware {
     func respond(to request: Request, chainingTo next: Responder) throws -> Response {
         do {
             return try next.respond(to: request)
-        } catch AuthorizationError.userIdMisMatch (let error) {
+        } catch AuthError.userIdMisMatch (let error) {
             print("UserID mismatch: requestId: \(String(describing: error.requestedId)), targetId: \(String(describing: error.targetId))")
             return try makeErrorResponse(status: .forbidden, message: "Not permitted operation")
         } catch ValidationError.requiredParameterMissing (let parameterName) {
@@ -14,9 +14,12 @@ final class ErrorHandlerMiddleware: Middleware {
         } catch ValidationError.invalidData (let error) {
             print("\(error.parameterName) is invalid. requested value is \(error.dataString)")
             return try makeErrorResponse(status: .badRequest, message: "\(error.parameterName) is invalid")
-        } catch let AuthorizationError.badCredential (email) {
+        } catch let AuthError.badCredential (email) {
             print("Login failed: email = \(email)")
             return try makeErrorResponse(status: .notFound, message: "Email or password is wrong")
+        } catch AuthError.tokenExpired {
+            print("Token expied error occured")
+            return try makeErrorResponse(status: .authenticationTimeout, message: "Token has already been expired")
         } catch let error {
             print(error.localizedDescription)
             return try makeErrorResponse(status: .internalServerError, message: "Internal server error occurred")
