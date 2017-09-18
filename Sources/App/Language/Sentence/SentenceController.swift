@@ -42,7 +42,7 @@ final class SentenceController: ResourceRepresentable {
     
     func clear(_ req: Request) throws -> ResponseRepresentable {
         let userId = try req.userId()
-        try Sentence.makeQuery().filter(Sentence.Properties.userId, userId).delete()
+        try SentenceService.clearSentences(userId: userId)
         return Response(status: .ok)
     }
     
